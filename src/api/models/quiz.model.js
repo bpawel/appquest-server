@@ -1,3 +1,5 @@
+/* eslint-disable spaced-comment */
+/* eslint-disable max-len */
 /* eslint-disable linebreak-style */
 /* eslint-disable object-curly-newline */
 /* eslint-disable linebreak-style */
@@ -16,7 +18,6 @@ const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
 const APIError = require('../utils/APIError');
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
-
 
 const quizType = ['open', 'closed', 'true/false', 'multiple'];
 /**
@@ -44,16 +45,25 @@ const quizSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
-  question: {
-    type: Array,
-    required: true,
-  },
-  answers: {
-    type: Array,
-  },
-  validAnswers: {
-    type: Array,
-  },
+  class_: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Class',
+  }],
+  question: [{
+      //type: mongoose.Schema.Types.ObjectId,
+      ques: {
+        type: String,
+        required: true,
+      },
+      answers: {
+        type: Array,
+        required: true,
+      },
+      validAnswers: {
+        type: Array,
+        required: true,
+      },
+    }],
 }, {
   timestamps: true,
 });
@@ -64,7 +74,7 @@ const quizSchema = new mongoose.Schema({
 quizSchema.method({
     transform() {
       const transformed = {};
-      const fields = ['id', 'name', 'type', 'instructor', 'question', 'answers', 'validAnswers', 'createdAt'];
+      const fields = ['id', 'name', 'type', 'ques', 'instructor', 'question', 'class_', 'answers', 'validAnswers', 'createdAt'];
 
       Object.assign(transformed, ...fields.map(key => ({ [key]: this[key] })));
 
@@ -85,7 +95,12 @@ quizSchema.statics = {
       let quiz;
 
       if (mongoose.Types.ObjectId.isValid(id)) {
-        quiz = await this.findById(id).exec();
+        quiz = await this.findById(id)
+        .populate({
+          path: 'class_',
+          ref: 'Class',
+        })
+        .exec();
       }
       if (quiz) {
         return quiz;
@@ -101,13 +116,17 @@ quizSchema.statics = {
   },
 
   list({
-    page = 1, perPage = 10, instructor, name, question, answers, validAnswers,
+    page = 1, perPage = 10, instructor, name, ques, type, question, class_, answers, validAnswers,
   }) {
-    const options = omitBy({ instructor, name, question, answers, validAnswers }, isNil);
+    const options = omitBy({ instructor, name, question, type, ques, class_, answers, validAnswers }, isNil);
 
     return this.find(options)
       .sort({ createdAt: -1 })
       .skip(perPage * (page - 1))
+      .populate({
+        path: 'class_',
+        select: 'name',
+      })
       .limit(perPage)
       .exec();
   },

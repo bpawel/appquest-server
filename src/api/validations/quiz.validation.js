@@ -13,9 +13,11 @@ module.exports = {
       name: Joi.string(),
       type: Joi.string(),
       instructor: Joi.string(),
-      answers: Joi.array(),
-      validAnswers: Joi.array(),
-      question: Joi.array(),
+      question: [{
+        ques: Joi.string(),
+        answers: Joi.array(),
+        validAnswers: Joi.array(),
+      }],
     },
   },
 
@@ -25,9 +27,11 @@ module.exports = {
         name: Joi.string(),
         type: Joi.string(),
         instructor: Joi.string(),
-        answers: Joi.array(),
-        validAnswers: Joi.array(),
-        question: Joi.array(),
+        question: [{
+          ques: Joi.string(),
+          answers: Joi.array(),
+          validAnswers: Joi.array(),
+        }],
     },
   },
 
@@ -37,9 +41,11 @@ module.exports = {
         name: Joi.string(),
         type: Joi.string(),
         instructor: Joi.string(),
-        answers: Joi.array(),
-        validAnswers: Joi.array(),
-        question: Joi.array(),
+        question: [{
+          ques: Joi.string(),
+          answers: Joi.array(),
+          validAnswers: Joi.array(),
+        }],
     },
   },
 
@@ -49,9 +55,11 @@ module.exports = {
         name: Joi.string(),
         type: Joi.string(),
         instructor: Joi.string(),
-        answers: Joi.array(),
-        validAnswers: Joi.array(),
-        question: Joi.array(),
+        question: [{
+          ques: Joi.string(),
+          answers: Joi.array(),
+          validAnswers: Joi.array(),
+        }],
     },
   },
 // eslint-disable-next-line eol-last

@@ -46,6 +46,10 @@ const classSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
+  quiz: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Quiz',
+  }],
 }, {
   timestamps: true,
 });
@@ -56,9 +60,9 @@ const classSchema = new mongoose.Schema({
 classSchema.method({
     transform() {
       const transformed = {};
-      const fields = ['id', 'name', 'description', 'instructor', 'users', 'createdAt'];
+      const fields = ['id', 'name', 'description', 'instructor', 'quiz', 'users', 'createdAt'];
 
-      // do przetestowania, nie wiem czy działa
+      
       Object.assign(transformed, ...fields.map(key => ({ [key]: this[key] })));
 
       return transformed;
@@ -89,6 +93,10 @@ classSchema.statics = {
           path: 'users',
           select: 'email',
         })
+        .populate({
+          path: 'quiz',
+          select: 'name',
+        })
         .exec();
       }
       if (class_) {
@@ -106,9 +114,9 @@ classSchema.statics = {
 
 
   list({
-    page = 1, perPage = 10, instructor, users, name, description,
+    page = 1, perPage = 10, instructor, users, quiz, name, description,
   }) {
-    const options = omitBy({ instructor, name, users, description }, isNil);
+    const options = omitBy({ instructor, name, users, quiz, description }, isNil);
 
     return this.find(options)
       .sort({ createdAt: -1 })
@@ -121,6 +129,10 @@ classSchema.statics = {
       .populate({
         path: 'users',
         select: 'email',
+      })
+      .populate({
+        path: 'quiz',
+        select: 'name',
       })
       .exec();
   },
