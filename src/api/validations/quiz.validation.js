@@ -9,16 +9,17 @@ module.exports = {
 
   // GET /v1/quiz
   listQuiz: {
-    query: {
+    body: {
       name: Joi.string(),
       type: Joi.string(),
       instructor: Joi.string(),
-      question: [{
-        ques: Joi.string(),
+      question: Joi.array().items(Joi.object({
+        questionName: Joi.string(),
+        type: Joi.string(),
         answers: Joi.array(),
         validAnswers: Joi.array(),
-      }],
-    },
+      })),
+  },
   },
 
   // POST /v1/quiz
@@ -27,40 +28,43 @@ module.exports = {
         name: Joi.string(),
         type: Joi.string(),
         instructor: Joi.string(),
-        question: [{
-          ques: Joi.string(),
+        question: Joi.array().items(Joi.object({
+          questionName: Joi.string(),
+          type: Joi.string(),
           answers: Joi.array(),
           validAnswers: Joi.array(),
-        }],
+        })),
     },
   },
 
   // PUT /v1/:quizId
   replaceQuiz: {
     body: {
-        name: Joi.string(),
+      name: Joi.string(),
+      type: Joi.string(),
+      instructor: Joi.string(),
+      question: Joi.array().items(Joi.object({
+        questionName: Joi.string(),
         type: Joi.string(),
-        instructor: Joi.string(),
-        question: [{
-          ques: Joi.string(),
-          answers: Joi.array(),
-          validAnswers: Joi.array(),
-        }],
-    },
+        answers: Joi.array(),
+        validAnswers: Joi.array(),
+      })),
+  },
   },
 
   // PATCH /v1/:quizId
   updateQuiz: {
     body: {
-        name: Joi.string(),
+      name: Joi.string(),
+      type: Joi.string(),
+      instructor: Joi.string(),
+      question: Joi.array().items(Joi.object({
+        questionName: Joi.string(),
         type: Joi.string(),
-        instructor: Joi.string(),
-        question: [{
-          ques: Joi.string(),
-          answers: Joi.array(),
-          validAnswers: Joi.array(),
-        }],
-    },
+        answers: Joi.array(),
+        validAnswers: Joi.array(),
+      })),
+  },
   },
 // eslint-disable-next-line eol-last
 };

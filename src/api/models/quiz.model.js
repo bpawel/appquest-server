@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable spaced-comment */
 /* eslint-disable max-len */
 /* eslint-disable linebreak-style */
@@ -31,11 +32,6 @@ const quizSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 50,
   },
-  type: {
-    type: String,
-    enum: quizType,
-    default: 'closed',
-  },
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -50,20 +46,25 @@ const quizSchema = new mongoose.Schema({
     ref: 'Class',
   }],
   question: [{
-      //type: mongoose.Schema.Types.ObjectId,
-      ques: {
-        type: String,
-        required: true,
-      },
-      answers: {
-        type: Array,
-        required: true,
-      },
-      validAnswers: {
-        type: Array,
-        required: true,
-      },
-    }],
+    //type: mongoose.Schema.Types.ObjectId,
+    questionName: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: quizType,
+      default: 'closed',
+    },
+    answers: {
+      type: Array,
+      required: true,
+    },
+    validAnswers: {
+      type: Array,
+      required: true,
+    },
+  }],
 }, {
   timestamps: true,
 });
@@ -74,7 +75,7 @@ const quizSchema = new mongoose.Schema({
 quizSchema.method({
     transform() {
       const transformed = {};
-      const fields = ['id', 'name', 'type', 'ques', 'instructor', 'question', 'class_', 'answers', 'validAnswers', 'createdAt'];
+      const fields = ['id', 'name', 'type', 'nameQuestion', 'instructor', 'question', 'class_', 'answers', 'nameAnswer', 'validAnswer', 'createdAt'];
 
       Object.assign(transformed, ...fields.map(key => ({ [key]: this[key] })));
 
@@ -116,9 +117,9 @@ quizSchema.statics = {
   },
 
   list({
-    page = 1, perPage = 10, instructor, name, ques, type, question, class_, answers, validAnswers,
+    page = 1, perPage = 10, instructor, name, nameQuestion, type, question, class_, answers, nameAnswer, validAnswer,
   }) {
-    const options = omitBy({ instructor, name, question, type, ques, class_, answers, validAnswers }, isNil);
+    const options = omitBy({ instructor, name, question, type, nameQuestion, class_, answers, nameAnswer, validAnswer }, isNil);
 
     return this.find(options)
       .sort({ createdAt: -1 })
