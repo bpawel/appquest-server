@@ -28,6 +28,7 @@
   },
   "keywords": [],
   "dependencies": {
+    "async": "^2.6.1",
     "axios": "^0.18.0",
     "bcrypt": "^3.0.2",
     "bcryptjs": "2.4.3",
@@ -35,6 +36,7 @@
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "cross-env": "^5.0.1",
+    "crypto": "^1.0.1",
     "dotenv-safe": "^6.1.0",
     "express": "^4.16.4",
     "express-validation": "^1.0.2",
@@ -46,6 +48,7 @@
     "moment-timezone": "^0.5.23",
     "mongoose": "^5.3.11",
     "morgan": "^1.9.1",
+    "nodemailer": "^5.0.0",
     "passport": "^0.4.0",
     "passport-http-bearer": "^1.0.1",
     "passport-jwt": "4.0.0",

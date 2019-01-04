@@ -1,4 +1,7 @@
 /* eslint-disable linebreak-style */
+// eslint-disable-next-line linebreak-style
+/* eslint-disable import/order */
+/* eslint-disable linebreak-style */
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
@@ -10,12 +13,12 @@ const { logs } = require('./vars');
 const strategies = require('./passport');
 const error = require('../api/middlewares/error');
 
+
 /**
 * Express instance
 * @public
 */
 const app = express();
-
 // request logging. dev: console | production: file
 app.use(morgan(logs));
 

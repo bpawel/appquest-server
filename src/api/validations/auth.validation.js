@@ -33,4 +33,19 @@ module.exports = {
       refreshToken: Joi.string().required(),
     },
   },
+
+  // POST /v1/auth/reset-password
+  resetPasword: {
+    body: {
+      email: Joi.string().email().required(),
+    },
+  },
+
+  // POST /v1/auth/forgot-password
+  forgotPasword: {
+    body: {
+      email: Joi.string().email().required(),
+    },
+  },
+
 };

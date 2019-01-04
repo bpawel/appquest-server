@@ -39,6 +39,15 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     maxlength: 128,
   },
+  hashPassword: {
+    type: String,
+  },
+  resetPassword: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
   role: {
     type: String,
     enum: roles,

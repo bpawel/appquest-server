@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 /* eslint-disable linebreak-style */
 const express = require('express');
 const validate = require('express-validation');
@@ -6,6 +8,8 @@ const {
   login,
   register,
   refresh,
+  forgotPasssword,
+  resetPasword,
 } = require('../../validations/auth.validation');
 
 const router = express.Router();
@@ -94,9 +98,9 @@ router.route('/login')
 router.route('/refresh-token')
   .post(validate(refresh), controller.refresh);
 
+router.route('/forgot-password')
+  .post(controller.forgotPassword);
 
-/**
- * TODO: POST /v1/auth/reset-password
- */
-
+router.route('/reset-password')
+  .post(controller.resetPassword);
 module.exports = router;
