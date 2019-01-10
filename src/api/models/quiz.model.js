@@ -117,7 +117,7 @@ quizSchema.statics = {
   },
 
   list({
-    page = 1, perPage = 10, instructor, name, nameQuestion, type, question, class_, answers, nameAnswer, validAnswer,
+    page = 1, perPage = 1000, instructor, name, nameQuestion, type, question, class_, answers, nameAnswer, validAnswer,
   }) {
     const options = omitBy({ instructor, name, question, type, nameQuestion, class_, answers, nameAnswer, validAnswer }, isNil);
 

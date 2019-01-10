@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable linebreak-style */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-trailing-spaces */
@@ -87,6 +88,9 @@ userSchema.pre('save', async function save(next) {
 /**
  * Methods
  */
+userSchema.methods.comparePassword = (password) => {
+  return bcrypt.compareSync(password, this.hash_password);
+};
 userSchema.method({
   transform() {
     const transformed = {};
@@ -190,7 +194,7 @@ userSchema.statics = {
    * @returns {Promise<User[]>}
    */
   list({
-    page = 1, perPage = 30, class_, email, role,
+    page = 1, perPage = 1000, class_, email, role,
   }) {
     const options = omitBy({ email, role }, isNil);
 

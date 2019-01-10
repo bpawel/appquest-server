@@ -41,6 +41,7 @@ const classSchema = new mongoose.Schema({
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    required: true,
   },
   users: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -86,8 +87,8 @@ classSchema.statics = {
       if (mongoose.Types.ObjectId.isValid(id)) {
         class_ = await this.findById(id)
         .populate({
-          path: 'instructor',
-          select: 'email',
+          path: 'quiz',
+          ref: 'Quiz',
         })
         .populate({
           path: 'users',
@@ -114,7 +115,7 @@ classSchema.statics = {
 
 
   list({
-    page = 1, perPage = 10, instructor, users, quiz, name, description,
+    page = 1, perPage = 1000, instructor, users, quiz, name, description,
   }) {
     const options = omitBy({ instructor, name, users, quiz, description }, isNil);
 
@@ -122,10 +123,6 @@ classSchema.statics = {
       .sort({ createdAt: -1 })
       .skip(perPage * (page - 1))
       .limit(perPage)
-      .populate({
-        path: 'instructor',
-        select: 'email',
-      })
       .populate({
         path: 'users',
         select: 'email',
