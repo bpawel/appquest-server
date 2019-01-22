@@ -47,10 +47,10 @@ const classSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
-  quiz: [{
+  quiz: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Quiz',
-  }],
+  },
 }, {
   timestamps: true,
 });
@@ -88,16 +88,17 @@ classSchema.statics = {
         class_ = await this.findById(id)
         .populate({
           path: 'quiz',
-          ref: 'Quiz',
+            select: 'name',
+          // ref: 'Quiz',
         })
         .populate({
           path: 'users',
           select: 'email',
         })
-        .populate({
-          path: 'quiz',
-          select: 'name',
-        })
+        // .populate({
+        //   path: 'quiz',
+        //   select: 'name',
+        // })
         .exec();
       }
       if (class_) {
@@ -127,10 +128,9 @@ classSchema.statics = {
         path: 'users',
         select: 'email',
       })
-      .populate({
-        path: 'quiz',
-        select: 'name',
-      })
+      // .populate({
+      //   path: 'quiz',
+      // })
       .exec();
   },
 };

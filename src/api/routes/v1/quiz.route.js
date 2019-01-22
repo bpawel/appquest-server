@@ -97,7 +97,7 @@ router
    * @apiError (Forbidden 403)    Forbidden    Only quiz with same id or admins can access the data
    * @apiError (Not Found 404)    NotFound     Quiz does not exist
    */
-  .get(authorize([ADMIN, INSTRUCTOR]), controller.get)
+  .get(authorize([ADMIN, INSTRUCTOR, STUDENT]), controller.get)
   /**
    * @api {put} v1/quiz/:id Replace Quiz
    * @apiDescription Replace the whole quiz document with a new one
