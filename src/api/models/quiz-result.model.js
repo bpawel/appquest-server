@@ -1,9 +1,4 @@
 /* eslint-disable linebreak-style */
-/* eslint-disable spaced-comment */
-/* eslint-disable max-len */
-/* eslint-disable linebreak-style */
-/* eslint-disable object-curly-newline */
-/* eslint-disable linebreak-style */
 /* eslint-disable indent */
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-unused-vars */
@@ -20,51 +15,25 @@ const uuidv4 = require('uuid/v4');
 const APIError = require('../utils/APIError');
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
 
-const questionType = ['open', 'closed', 'true/false', 'multiple'];
 /**
  * Quiz Schema
  * @private
  */
-const quizSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 50,
+const quizResultSchema = new mongoose.Schema({
+  quiz: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Quiz',
   },
-  instructor: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
   },
-  users: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
-  class_: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Class',
-  }],
-  question: [{
-    //type: mongoose.Schema.Types.ObjectId,
-    questionName: {
-      type: String,
-      required: true,
-    },
-    type: {
-      type: String,
-      enum: questionType,
-      default: questionType[1],
-    },
-    answers: {
-      type: Array,
-      required: true,
-    },
-    validAnswers: {
-      type: Array,
-      required: true,
-    },
-  }],
+  correctAnswersCount: {
+    type: mongoose.Schema.Types.Number,
+  },
+  questionsCount: {
+    type: mongoose.Schema.Types.Number,
+  }
 }, {
   timestamps: true,
 });
@@ -72,18 +41,18 @@ const quizSchema = new mongoose.Schema({
 /**
  * Methods
  */
-quizSchema.method({
+quizResultSchema.method({
     transform() {
       const transformed = {};
-      const fields = ['id', 'name', 'type', 'nameQuestion', 'instructor', 'question', 'class_', 'answers', 'nameAnswer', 'validAnswer', 'createdAt'];
+      const fields = ['id', 'quiz', 'user', 'correctAnswersCount', 'questionsCount', 'createdAt'];
 
+      // do przetestowania, nie wiem czy działa
       Object.assign(transformed, ...fields.map(key => ({ [key]: this[key] })));
 
       return transformed;
     },
-  });
-    
-quizSchema.statics = {
+});
+quizResultSchema.statics = {
 
   /**
    * Get user
@@ -98,8 +67,8 @@ quizSchema.statics = {
       if (mongoose.Types.ObjectId.isValid(id)) {
         quiz = await this.findById(id)
         .populate({
-          path: 'class_',
-          ref: 'Class',
+          path: 'quiz',
+          ref: 'Quiz',
         })
         .exec();
       }
@@ -117,21 +86,21 @@ quizSchema.statics = {
   },
 
   list({
-    page = 1, perPage = 1000, instructor, name, nameQuestion, type, question, class_, answers, nameAnswer, validAnswer,
+    page = 1, perPage = 1000, quiz, user, correctAnswersCount, questionsCount, createdAt,
   }) {
-    const options = omitBy({ instructor, name, question, type, nameQuestion, class_, answers, nameAnswer, validAnswer }, isNil);
+    const options = omitBy({ quiz, user, correctAnswersCount, questionsCount, createdAt }, isNil);
 
     return this.find(options)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .skip(perPage * (page - 1))
       .populate({
-        path: 'class_',
-        select: 'name',
+        path: 'quiz',
+        ref: 'Quiz',
       })
       .limit(perPage)
       .exec();
   },
 
 };
-  
-module.exports = mongoose.model('Quiz', quizSchema);
+
+module.exports = mongoose.model('QuizResult', quizResultSchema);

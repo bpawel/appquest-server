@@ -140,16 +140,15 @@ exports.forgotPassword = async (req, res, next) => {
     let data = {
       to: user.email,
       from: 'appqproject@gmail.com',
-      subject: 'Password Reset',
-      text: 'Welcome ' + user.email + '\n\n' +
-        'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+      subject: 'Reset hasła',
+      text: 'Witaj, ' + user.email + '\n\n' +
+        'Kliknij poniższy link lub wklej go do przeglądarki, aby ukończyć proces:\n\n' +
         'http://localhost:8080/reset-password?token=' + token + '\n\n' +
-        'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+        'Jeśli nie poprosiłeś o to, zignoruj ten e-mail, a twoje hasło pozostanie niezmienione.\n'
     };
-    // setup email data with unicode symbols
     transporter.sendMail(data, (err) => {
       if (!err) {
-        return res.json({ message: 'Kindly check your email for further instructions' });
+        return res.json({ message: 'Prosimy o sprawdzenie poczty e-mail w celu uzyskania dalszych instrukcji.' });
       }
     });
   } catch (error) {
@@ -163,70 +162,23 @@ exports.forgotPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     const { token } = req.query;
-    const user = await User.findOne({ resetPassword: token, $gt: Date.now() });
+    const user = await User.findOne({ resetPassword: token, resetPasswordExpires: Date.now() + 86400000 });
     user.password = req.body.password;
     user.resetPassword = '';
     user.resetPasswordExpires = '';
-    const userSaved = await User.findOneAndUpdate( { password: password, resetPassword: token, resetPasswordExpires: Date.now() + 86400000 });
+    await user.save();
     let data = {
       to: user.email,
-      from: '',
-      text: 'TEST',
-      subject: 'Password Reset Confirmation',
+      from: 'appqproject@gmail.com',
+      subject: 'Potwierdzenie zmiany hasła',
+      text: 'Hasło zostało zmienione. Teraz możesz zalogować się na swoje konto!',
     };
     transporter.sendMail(data, (err) => {
       if (!err) {
-        return res.json({ message: 'Kindly check your email for further instructions' });
-      }
+        return res.json({ message: 'Prosimy o sprawdzenie poczty e-mail w celu uzyskania dalszych instrukcji.' });
+      } 
     });
   } catch (error) {
     return next(error);
   }
 };
-
-
-// exports.resetPassword = function (req, res, next) {
-//   User.findOne({
-//     resetPassword: req.body.token,
-//     resetPasswordExpires: {
-//       $gt: Date.now()
-//     }
-//   }).exec((err, user) => {
-//     if (!err && user) {
-//       if (req.body.newPassword === req.body.verifyPassword) {
-//         user.hashPassword = bcrypt.hashSync(req.body.newPassword, 10);
-//         user.resetPassword = undefined;
-//         user.resetPasswordExpires = undefined;
-//         user.save((err) => {
-//           if (err) {
-//             return res.status(422).send({
-//               message: err
-//             });
-//           } else {
-//             // eslint-disable-next-line vars-on-top
-//             var data = {
-//               to: user.email,
-//               from: 'appqproject@gmail.com',
-//               text: 'TEST',
-//               subject: 'Password Reset Confirmation',
-//             };
-//             transporter.sendMail(data, (err) => {
-//               if (!err) {
-//                 return res.json({ message: 'Password reset' });
-//               }
-//                 return done(err);
-//             });
-//           }
-//         });
-//       } else {
-//         return res.status(422).send({
-//           message: 'Passwords do not match'
-//         });
-//       }
-//     } else {
-//       return res.status(400).send({
-//         message: 'Password reset token is invalid or has expired.'
-//       });
-//     }
-//   });
-// };

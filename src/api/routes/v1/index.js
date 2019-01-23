@@ -5,6 +5,7 @@ const userRoutes = require('./user.route');
 const authRoutes = require('./auth.route');
 const classRoutes = require('./class.route');
 const quizRoutes = require('./quiz.route');
+const quizResultsRoutes = require('./quiz-result.route');
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
 router.use('/class', classRoutes);
 router.use('/quiz', quizRoutes);
+router.use('/quiz-result', quizResultsRoutes);
 
 module.exports = router;
