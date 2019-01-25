@@ -31,8 +31,8 @@ const User = require('../models/user.model');
 const RefreshToken = require('../models/refreshToken.model');
 const { jwtExpirationInterval } = require('../../config/vars');
 const nodemailer = require('nodemailer');
-const async = require('async');
 const crypto = require('crypto');
+const util = require('util');
 
 // Generate test SMTP service account from ethereal.email
 // Only needed if you don't have a real mail account for testing
@@ -48,6 +48,7 @@ const crypto = require('crypto');
             pass: 'appq123456' // generated ethereal password
         }
     });
+    const sendMail = util.promisify(transporter.sendMail);
 
 
 /**
@@ -134,23 +135,40 @@ exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
-    const token = await crypto.randomBytes(20).toString('hex');
-    user.resetPassword = token;
-    const userSaved = await User.findOneAndUpdate( { resetPassword: token, resetPasswordExpires: Date.now() + 86400000 });
-    let data = {
-      to: user.email,
-      from: 'appqproject@gmail.com',
-      subject: 'Reset hasła',
-      text: 'Witaj, ' + user.email + '\n\n' +
-        'Kliknij poniższy link lub wklej go do przeglądarki, aby ukończyć proces:\n\n' +
-        'http://localhost:8080/reset-password?token=' + token + '\n\n' +
-        'Jeśli nie poprosiłeś o to, zignoruj ten e-mail, a twoje hasło pozostanie niezmienione.\n'
-    };
-    transporter.sendMail(data, (err) => {
-      if (!err) {
-        return res.json({ message: 'Prosimy o sprawdzenie poczty e-mail w celu uzyskania dalszych instrukcji.' });
+
+    if (user) {
+      const token = await crypto.randomBytes(20).toString('hex');
+      user.resetPassword = token;
+      user.resetPasswordExpires = Date.now() + 86400000;
+      await user.save();
+      
+      let data = {
+        to: user.email,
+        from: 'appqproject@gmail.com',
+        subject: 'Reset hasła',
+          html: 'Witaj,  ' + user.email + '\n\n' +
+            '<p>Kliknij poniższy link lub wklej go do przeglądarki, aby ukończyć proces:<br>' +
+            '<a href="http://localhost:8080/reset-password?token=' + token + '">http://localhost:8080/reset-password?token=' + token + '</a></p><br><p>' +
+            'Jeśli nie poprosiłeś o to, zignoruj ten e-mail, a twoje hasło pozostanie niezmienione.</p>'
+      };
+      // setup email data with unicode symbols
+
+      try {
+        await (new Promise((resolve, reject) => {
+          transporter.sendMail(data, (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          });
+       }));
+      } catch (err) {
+        throw new Error('Ooops! Coś poszło nie tak!' + err.message);
       }
-    });
+      
+      return res.json({ message: 'Dalsze instrukcje zostały wysłane na pocztę e-mail.' });
+    }
   } catch (error) {
     return next(error);
   }
@@ -162,22 +180,17 @@ exports.forgotPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     const { token } = req.query;
-    const user = await User.findOne({ resetPassword: token, resetPasswordExpires: Date.now() + 86400000 });
+    const user = await User.findOne({ resetPassword: token, resetPasswordExpires: {$gt: Date.now()} });
+
+    if (!user) {
+      throw new Error('Ooops! Nie udało się zmienić Twojego hasła. Link, którego próbujesz użyć, jest nieprawidłowy lub wygasł.');
+    }
+
     user.password = req.body.password;
-    user.resetPassword = '';
-    user.resetPasswordExpires = '';
+    user.resetPassword = undefined;
+    user.resetPasswordExpires = undefined;
     await user.save();
-    let data = {
-      to: user.email,
-      from: 'appqproject@gmail.com',
-      subject: 'Potwierdzenie zmiany hasła',
-      text: 'Hasło zostało zmienione. Teraz możesz zalogować się na swoje konto!',
-    };
-    transporter.sendMail(data, (err) => {
-      if (!err) {
-        return res.json({ message: 'Prosimy o sprawdzenie poczty e-mail w celu uzyskania dalszych instrukcji.' });
-      } 
-    });
+        return res.json({ message: 'Gotowe! Możesz teraz zalogować się na swoje konto przy użyciu nowego hasła.' });
   } catch (error) {
     return next(error);
   }

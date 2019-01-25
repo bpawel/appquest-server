@@ -46,7 +46,6 @@ quizResultSchema.method({
       const transformed = {};
       const fields = ['id', 'quiz', 'user', 'correctAnswersCount', 'questionsCount', 'createdAt'];
 
-      // do przetestowania, nie wiem czy działa
       Object.assign(transformed, ...fields.map(key => ({ [key]: this[key] })));
 
       return transformed;

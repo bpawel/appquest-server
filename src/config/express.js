@@ -12,7 +12,7 @@ const routes = require('../api/routes/v1');
 const { logs } = require('./vars');
 const strategies = require('./passport');
 const error = require('../api/middlewares/error');
-const moment = require('moment-timezone');
+
 
 /**
 * Express instance
@@ -21,7 +21,6 @@ const moment = require('moment-timezone');
 const app = express();
 // request logging. dev: console | production: file
 app.use(morgan(logs));
-moment().tz("Europe/Warsaw").format('ha z');
 
 // parse body params and attache them to req.body
 app.use(bodyParser.json());
@@ -51,6 +50,5 @@ app.use(error.notFound);
 
 // error handler, send stacktrace only during development
 app.use(error.handler);
-
 
 module.exports = app;
