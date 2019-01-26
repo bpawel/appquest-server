@@ -148,7 +148,7 @@ exports.forgotPassword = async (req, res, next) => {
         subject: 'Reset hasła',
           html: 'Witaj,  ' + user.email + '\n\n' +
             '<p>Kliknij poniższy link lub wklej go do przeglądarki, aby ukończyć proces:<br>' +
-            '<a href="http://localhost:8080/reset-password?token=' + token + '">http://localhost:8080/reset-password?token=' + token + '</a></p><br><p>' +
+            '<a href="' + process.env.HOST_EMAIL + '/reset-password?token=' + token + '">' + process.env.HOST_EMAIL + '/reset-password?token=' + token + '</a></p><br><p>' +
             'Jeśli nie poprosiłeś o to, zignoruj ten e-mail, a twoje hasło pozostanie niezmienione.</p>'
       };
       // setup email data with unicode symbols
