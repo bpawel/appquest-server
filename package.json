@@ -12,7 +12,6 @@
   },
   "scripts": {
     "precommit": "npm run lint",
-    "prestart": "npm run docs",
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js",
     "lint": "eslint ./src/ --ignore-path .gitignore --ignore-pattern internals/scripts",
