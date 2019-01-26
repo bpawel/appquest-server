@@ -13,33 +13,33 @@ cp .env.example .env
 ## Running Locally
 
 ```
-yarn dev
+npm run dev
 ```
 
 ## Running in Production
 
 ```
-yarn start
+npm start
 ```
 
 ## Lint
 
 ```
 # lint code with ESLint
-yarn lint
+npm lint
 ```
 ```
 # try to fix ESLint errors
-yarn lint:fix
+npm lint:fix
 ```
 ```
 # lint and watch for changes
-yarn lint:watch
+npm lint:watch
 ```
 
 ## Documentation
 
 ```bash
 # generate and open api documentation
-yarn docs
+npm docs
 ```
